@@ -1,20 +1,18 @@
 from __future__ import division 
 import requests
 
-# will need to check back regularly to see if this url has changed!
-pwt_url = 'http://www.rug.nl/research/ggdc/data/pwt/v80/pwt80.zip'
+# will need to check back regularly to see if base url has changed!
+base_url = 'http://www.rug.nl/research/ggdc/data/pwt/v80/'
 
-# Connect to the PWT website...
-pwt_buffer = requests.get(url=pwt_url)
+# Connect to the PWT data...
+pwt_buffer = requests.get(url=base_url + 'pwt.zip')
 
 # ...save PWT files to disk...
 with open('pwt80.zip', 'wb') as pwt_zip_file:
     pwt_zip_file.write(pwt_buffer.content)
 
-dep_rates_url = 'http://www.rug.nl/research/ggdc/data/pwt/v80/depreciation_rates.zip'
-
 # Connect to the depreciation rates data...
-dep_rates_buffer = requests.get(url=dep_rates_url)
+dep_rates_buffer = requests.get(url=base_url + 'depreciation_rates.zip')
 
 # ...save depreciation rates files to disk...
 with open('depreciation_rates.zip', 'wb') as dep_rates_zip_file:
