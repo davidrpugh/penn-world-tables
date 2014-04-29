@@ -6,19 +6,23 @@ import pandas as pd
 import requests
 
 # will need to check back regularly to see if base url has changed!
-base_url = 'http://www.rug.nl/research/ggdc/data/pwt/v80/'
+base_url = 'http://www.rug.nl/research/ggdc/data/pwt/'
 
-def get_pwt_data(base_url):
-    """Downloads the PWT data from the web."""
-    file_names = ['pwt80', 'depreciation_rates']
-    
-    for file_name in file_names:
-        tmp_buffer = requests.get(url=base_url + file_name + '.zip')
-        tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
-        tmp_zip.extract(file_name + '.dta')
-        print(file_name + ' successfully downloaded!')
- 
-def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/v80/', version=80):
+def download_dep_rates_data(base_url, version=80):
+    """Downloads the depreciation rate data."""
+    tmp_url = base_url + 'v' + str(version) + '/depreciation_rates.zip'
+    tmp_buffer = requests.get(url=tmp_url)
+    tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
+    tmp_zip.extract('depreciation_rates.dta')
+
+def download_pwt_data(base_url, version=80):
+    """Downloads the Penn World Tables (PWT) data."""
+    tmp_url = base_url + 'v' + str(version) + '/pwt' + str(version) + '.zip'
+    tmp_buffer = requests.get(url=tmp_url)
+    tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
+    tmp_zip.extract('pwt' + str(version) + '.dta')
+     
+def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=80):
     """
     Load the Penn World Tables data as a Pandas Panel object.
 
@@ -31,18 +35,16 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/v80/', vers
     Returns:
 
         pwt:    A Pandas Panel object containing the Penn World Tables data.
-        
-    TODO: Work out a way to merge Pandas Panel objects.
-    
+            
     """        
-    # first check for a local copy of PWT
     try: 
         pwt_raw_data = pd.read_stata('pwt' + str(version) + '.dta')
         dep_rates_raw_data = pd.read_stata('depreciation_rates.dta')
         
-    # otherwise, 
     except IOError:  
-        get_pwt_data(base_url)
+        download_pwt_data(base_url, version)
+        download_dep_rates_data(base_url, version)
+        
         pwt_raw_data = pd.read_stata('pwt' + str(version) + '.dta')
         dep_rates_raw_data = pd.read_stata('depreciation_rates.dta')
         
@@ -57,8 +59,8 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/v80/', vers
     return pwt_panel_data
         
 if __name__ == '__main__':
-    base_url = 'http://www.rug.nl/research/ggdc/data/pwt/v80/'
+    base_url = 'http://www.rug.nl/research/ggdc/data/pwt/'
 
-    #get_pwt_data(base_url)
-    
+    #download_pwt_data(base_url)
+    #download_dep_rates_data(base_url)
     pwt_data = load_pwt_data(base_url, version=80)
