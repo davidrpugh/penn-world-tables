@@ -1,3 +1,8 @@
+"""
+Functions for downloading the Penn World Tables (PWT) data from the web and 
+coercing it into a Pandas Panel object for subsequent analysis.
+
+"""
 from __future__ import division 
 from StringIO import StringIO 
 import zipfile
@@ -19,7 +24,7 @@ def _get_pwt_data(base_url, version):
     tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
     tmp_zip.extract('pwt' + str(version) + '.dta')
   
-def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=80):
+def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
     """
     Downloads the Penn World Tables (PWT) data.
     
@@ -27,7 +32,7 @@ def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', versi
  
         base_url: (str) Base url to use for the download. Current default is:
             
-                      'http://www.rug.nl/research/ggdc/data/pwt'
+                      'http://www.rug.nl/research/ggdc/data/pwt/'
             
         version: (int) Version number for PWT data. Default is 80 (which is the 
                   most recent version).
@@ -36,7 +41,7 @@ def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', versi
     _get_dep_rates_data(base_url, version)
     _get_pwt_data(base_url, version)
        
-def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=80):
+def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
     """
     Load the Penn World Tables (PWT) data as a Pandas Panel object.
 
@@ -44,7 +49,7 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=8
  
         base_url: (str) Base url to use for the download. Current default is:
             
-                      'http://www.rug.nl/research/ggdc/data/pwt'
+                      'http://www.rug.nl/research/ggdc/data/pwt/'
             
         version: (int) Version number for PWT data. Default is 80 (which is the 
                   most recent version).
@@ -68,13 +73,14 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=8
     pwt_merged_data = pd.merge(pwt_raw_data, dep_rates_raw_data, how='outer', 
                                on=['countrycode', 'year'])
 
-    # coerce into a Pandas panel
+    # create the hierarchical index
+    pwt_merged_data.year = pd.to_datetime(pwt_raw_data.year, format='%Y')
     pwt_merged_data.set_index(['countrycode', 'year'], inplace=True)
+    
+    # coerce into a panel
     pwt_panel_data = pwt_merged_data.to_panel()
 
     return pwt_panel_data
         
 if __name__ == '__main__':
-    base_url = 'http://www.rug.nl/research/ggdc/data/pwt/'
-
-    pwt_panel_data = load_pwt_data(base_url, version=80)
+    pwt_panel_data = load_pwt_data(version=80)
