@@ -84,3 +84,4 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=
         
 if __name__ == '__main__':
     pwt_panel_data = load_pwt_data(version=80)
+    print(pwt_panel_data)
