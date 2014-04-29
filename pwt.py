@@ -25,21 +25,27 @@ def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', versi
     
     Arguments:
  
-        base_url (str) Base url to use for the download.
+        base_url: (str) Base url to use for the download. Current default is:
+            
+                      'http://www.rug.nl/research/ggdc/data/pwt'
+            
         version: (int) Version number for PWT data. Default is 80 (which is the 
                   most recent version).
-                  
+                                    
     """
     _get_dep_rates_data(base_url, version)
     _get_pwt_data(base_url, version)
        
 def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=80):
     """
-    Load the Penn World Tables data as a Pandas Panel object.
+    Load the Penn World Tables (PWT) data as a Pandas Panel object.
 
     Arguments:
  
-        base_url (str) Base url to use for the download.
+        base_url: (str) Base url to use for the download. Current default is:
+            
+                      'http://www.rug.nl/research/ggdc/data/pwt'
+            
         version: (int) Version number for PWT data. Default is 80 (which is the 
                   most recent version).
                                     
@@ -71,4 +77,4 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt', version=8
 if __name__ == '__main__':
     base_url = 'http://www.rug.nl/research/ggdc/data/pwt/'
 
-    pwt_data = load_pwt_data(base_url, version=80)
+    pwt_panel_data = load_pwt_data(base_url, version=80)
