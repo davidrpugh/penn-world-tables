@@ -1,6 +1,8 @@
 import numpy as np
 from scipy import stats
 
+import pwt
+
 def _technology(capital, labor, output, alpha, rho):
     """Technology as a residual of the CES production function."""
     output_per_worker = output / labor
