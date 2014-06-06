@@ -18,7 +18,7 @@ def _technology(capital, labor, output, alpha, rho):
 
 def _epsilon(new_tech, old_tech):
     """Simple disturbance term."""
-    eps = np.log(new_tech) - np.log(old_tech)
+    eps = np.log(new_tech.values) - np.log(old_tech.values)
     return eps
 
 if __name__ == '__main__':
@@ -31,4 +31,8 @@ if __name__ == '__main__':
     output = pwt_panel_data.major_xs('GBR')['rgdpna']
 
     alpha, rho = 0.5, 0.5
-    print _technology(capital, labor, output, alpha, rho)
+    new_tech = _technology(capital, labor, output, alpha, rho)[1:]
+    old_tech = _technology(capital, labor, output, alpha, rho)[:-1]
+
+    print _epsilon(new_tech, old_tech)
+
