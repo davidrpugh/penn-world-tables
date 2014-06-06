@@ -41,9 +41,10 @@ def _get_ctry_data(ctry_code, pwt_data):
 
     return capital, labor, output
 
-def total_log_likelihood(params, ctry_code, pwt_data):
+def total_neg_log_likelihood(params, ctry_code, pwt_data):
     """
-    Computes the total log-likelihood for model.
+    Computes the total negative log-likelihood for model. We want to choose
+    parameters to minimize this.
 
     Args:
 
@@ -53,7 +54,7 @@ def total_log_likelihood(params, ctry_code, pwt_data):
 
     Returns:
 
-        total_ll: (float) Total log-likelihood.
+        total_neg_ll: (float) Total negative log-likelihood.
 
     """
     # extract the parameters
@@ -67,14 +68,21 @@ def total_log_likelihood(params, ctry_code, pwt_data):
 
     eps = _epsilon(new_tech, old_tech)
 
-    total_ll = np.sum(_individual_log_likelihood(g, sigma, eps))    
+    total_neg_ll = -np.sum(_individual_log_likelihood(g, sigma, eps))    
 
-    return total_ll
+    return total_neg_ll
 
 if __name__ == '__main__':
+    from scipy import optimize
+
+    # get the PWT data
     pwt_panel_data = pwt.load_pwt_data()
 
+    # define an initial guess
     alpha, rho, sigma, g = 0.5, 0.9, 0.08, 0.03
     initial_guess = np.array([alpha, rho, sigma, g])
-    print total_log_likelihood(initial_guess, 'GBR', pwt_panel_data)
+
+    #result = optimize.minimize()
+
+    print total_neg_log_likelihood(initial_guess, 'GBR', pwt_panel_data)
 
