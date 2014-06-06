@@ -21,10 +21,10 @@ def _epsilon(new_tech, old_tech):
     eps = np.log(new_tech.values) - np.log(old_tech.values)
     return eps
 
-def _individual_likelihood(g, sigma, epsilon):
-    """Individual likelihood function assuming Normal disturbance."""
-    likelihood = stats.norm.pdf(epsilon, loc=g, scale=sigma)
-    return likelihood
+def _individual_log_likelihood(g, sigma, epsilon):
+    """Individual log-likelihood function assuming Normal disturbance."""
+    log_likelihood = np.log(stats.norm.pdf(epsilon, loc=g, scale=sigma))
+    return log_likelihood
 
 if __name__ == '__main__':
     pwt_panel_data = pwt.load_pwt_data()
@@ -42,5 +42,5 @@ if __name__ == '__main__':
     eps = _epsilon(new_tech, old_tech)
 
     g, sigma = 0.03, 0.8
-    print _individual_likelihood(g, sigma, eps)
+    print _individual_log_likelihood(g, sigma, eps)
 
