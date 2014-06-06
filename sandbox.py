@@ -79,10 +79,21 @@ if __name__ == '__main__':
     pwt_panel_data = pwt.load_pwt_data()
 
     # define an initial guess
-    alpha, rho, sigma, g = 0.5, 0.9, 0.08, 0.03
+    alpha, rho, sigma, g = 0.5, -0.5, 0.08, 0.03
     initial_guess = np.array([alpha, rho, sigma, g])
-
-    #result = optimize.minimize()
-
     print total_neg_log_likelihood(initial_guess, 'GBR', pwt_panel_data)
+
+    # define some bound constraints
+    tol = 1e-3
+    bound_cons = [(tol, 1-tol), (None, 1), (tol, None), (tol, None)]
+
+    result = optimize.minimize(fun=total_neg_log_likelihood,
+                               x0=initial_guess,
+                               args=('GBR', pwt_panel_data),
+                               method='COBYLA',
+                               bounds=bound_cons,
+                               tol=1e-4,
+                               )
+
+    
 
