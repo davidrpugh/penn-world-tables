@@ -26,7 +26,22 @@ def _individual_log_likelihood(g, sigma, epsilon):
     log_likelihood = np.log(stats.norm.pdf(epsilon, loc=g, scale=sigma))
     return log_likelihood
 
-def total_log_likelihood(params, ctry_code, data):
+def _get_ctry_data(ctry_code, pwt_data):
+    """Extract country specific DataFrame from PWT data."""
+    ctry_data = pwt_data.major_xs(ctry_code)
+    
+    # extract the relevant data
+    capital = ctry_data['rkna']
+    output = ctry_data['rgdpna']
+
+    # our measure of labor supply includes human capital
+    emp = ctry_data['emp']
+    hc = ctry_data['hc']
+    labor = emp * hc
+
+    return capital, labor, output
+
+def total_log_likelihood(params, ctry_code, pwt_data):
     """
     Computes the total log-likelihood for model.
 
@@ -44,12 +59,8 @@ def total_log_likelihood(params, ctry_code, data):
     # extract the parameters
     alpha, rho, sigma, g = params
 
-    ctry_data = data.major_xs(ctry_code)
-    capital = ctry_data['rkna']
-    emp = ctry_data['emp']
-    hc = ctry_data['hc']
-    labor = emp * hc
-    output = ctry_data['rgdpna']
+    # get the data
+    capital, labor, output = _get_ctry_data(ctry_code, pwt_data)
 
     new_tech = _technology(capital, labor, output, alpha, rho)[1:]
     old_tech = _technology(capital, labor, output, alpha, rho)[:-1]
@@ -63,7 +74,7 @@ def total_log_likelihood(params, ctry_code, data):
 if __name__ == '__main__':
     pwt_panel_data = pwt.load_pwt_data()
 
-    alpha, rho, g, sigma = 0.5, 0.9, 0.03, 0.08
-    initial_guess = np.array([alpha, rho, g, sigma])
+    alpha, rho, sigma, g = 0.5, 0.9, 0.08, 0.03
+    initial_guess = np.array([alpha, rho, sigma, g])
     print total_log_likelihood(initial_guess, 'GBR', pwt_panel_data)
 
