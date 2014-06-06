@@ -26,21 +26,44 @@ def _individual_log_likelihood(g, sigma, epsilon):
     log_likelihood = np.log(stats.norm.pdf(epsilon, loc=g, scale=sigma))
     return log_likelihood
 
-if __name__ == '__main__':
-    pwt_panel_data = pwt.load_pwt_data()
+def total_log_likelihood(params, ctry_code, data):
+    """
+    Computes the total log-likelihood for model.
 
-    capital = pwt_panel_data.major_xs('GBR')['rkna']
-    emp = pwt_panel_data.major_xs('GBR')['emp']
-    hc = pwt_panel_data.major_xs('GBR')['hc']
+    Args:
+
+        params: (ndarray) Array of parameter values.
+        ctry_code (str) ISO-3 Country code.
+        data: (Panel) PWT data as a Pandas Panel object.
+
+    Returns:
+
+        total_ll: (float) Total log-likelihood.
+
+    """
+    # extract the parameters
+    alpha, rho, sigma, g = params
+
+    ctry_data = data.major_xs(ctry_code)
+    capital = ctry_data['rkna']
+    emp = ctry_data['emp']
+    hc = ctry_data['hc']
     labor = emp * hc
-    output = pwt_panel_data.major_xs('GBR')['rgdpna']
+    output = ctry_data['rgdpna']
 
-    alpha, rho = 0.5, 0.5
     new_tech = _technology(capital, labor, output, alpha, rho)[1:]
     old_tech = _technology(capital, labor, output, alpha, rho)[:-1]
 
     eps = _epsilon(new_tech, old_tech)
 
-    g, sigma = 0.03, 0.8
-    print _individual_log_likelihood(g, sigma, eps)
+    total_ll = np.sum(_individual_log_likelihood(g, sigma, eps))    
+
+    return total_ll
+
+if __name__ == '__main__':
+    pwt_panel_data = pwt.load_pwt_data()
+
+    alpha, rho, g, sigma = 0.5, 0.9, 0.03, 0.08
+    initial_guess = np.array([alpha, rho, g, sigma])
+    print total_log_likelihood(initial_guess, 'GBR', pwt_panel_data)
 
