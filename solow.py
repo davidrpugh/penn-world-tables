@@ -15,7 +15,15 @@ k_dot = s * f - (n + g + delta) * k
 _symbolic_solow_system = sp.Matrix([k_dot])
 
 # ...compute the Jacobian...
-_symbolic_solow_jacobian = solow_system.jacobian((k,))
+_symbolic_solow_jacobian = _symbolic_solow_system.jacobian((k,))
 
 # ...compute the Hessian!
-_symbolic_solow_hessian = sp.hessian(solow_system, (k,))
+_symbolic_solow_hessian = sp.hessian(_symbolic_solow_system, (k,))
+
+# wrap the symbolic expressions as vectorized NumPy functions
+args = (k, alpha, delta, sigma, n, g, s)
+_numeric_solow_system = sp.lambdify(args, _symbolic_solow_system, 'numpy')
+_numeric_solow_jacobian = sp.lambdify(args, _symbolic_solow_jacobian, 'numpy')
+_numeric_solow_hessian = sp.lambdify(args, _symbolic_solow_hessian, 'numpy')
+
+
