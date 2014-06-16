@@ -24,24 +24,13 @@ def _get_pwt_data(base_url, version):
     tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
     tmp_zip.extract('pwt' + str(version) + '.dta')
   
-def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
-    """
-    Downloads the Penn World Tables (PWT) data.
-    
-    Arguments:
- 
-        base_url: (str) Base url to use for the download. Current default is:
-            
-                      'http://www.rug.nl/research/ggdc/data/pwt/'
-            
-        version: (int) Version number for PWT data. Default is 80 (which is the 
-                  most recent version).
-                                    
-    """
+def _download_pwt_data(base_url, version):
+    """Downloads the Penn World Tables (PWT) data."""
     _get_dep_rates_data(base_url, version)
     _get_pwt_data(base_url, version)
        
-def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
+def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', 
+                  version=80):
     """
     Load the Penn World Tables (PWT) data as a Pandas Panel object.
 
@@ -65,7 +54,7 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=
         dep_rates_raw_data = pd.read_stata('depreciation_rates.dta')
         
     except IOError:  
-        download_pwt_data(base_url, version)        
+        _download_pwt_data(base_url, version)        
         pwt_raw_data = pd.read_stata('pwt' + str(version) + '.dta')
         dep_rates_raw_data = pd.read_stata('depreciation_rates.dta')
         
