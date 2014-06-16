@@ -90,8 +90,8 @@ if __name__ == '__main__':
     result = optimize.minimize(fun=total_neg_log_likelihood,
                                x0=initial_guess,
                                args=('GBR', pwt_panel_data),
-                               method='COBYLA',
-                               bounds=bound_cons,
+                               method='Nelder-Mead',
+                               #bounds=bound_cons,
                                tol=1e-4,
                                )
 
