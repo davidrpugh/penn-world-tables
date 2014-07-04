@@ -1,0 +1,72 @@
+\documentclass[11pt]{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{natbib}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Solow Notes}
+\author{David R. Pugh}
+\date{\today}                                          
+
+\begin{document}
+
+\maketitle
+
+\section{Model}
+
+\section{Numerical solution}
+For generic $f$ the function $k(t)$ will not have a cloased form expression and will need to be solved for numerically.
+
+\section{Parameter estimation}
+Currently I am using maximum likelihood. Eventually want to incorporate priors and move to fully Bayesian framework.
+
+\subsection{Identifying assumption}
+Given assumption that factor markets are perfectly competitive, and thus capital and labor earn their respective marginal products, I can write model predicted factor shares as
+\begin{align}
+    \text{capital's share} \equiv \hat{\alpha}_K(t; g,n,s,\delta,\rho,\omega) =&\frac{f'\big(k(t; g,n,s,\delta,\rho,\omega)\big)k(t; g,n,s,\delta,\rho,\omega)}{f\big(k(t; g,n,s,\delta,\rho,\omega)\big)} \notag \\
+    =& \frac{\omega k(t; g,n,s,\delta,\rho,\omega)^{\rho}}{\omega k(t; g,n,s,\delta,\rho,\omega)^{\rho} + (1 - \omega)} \\
+    \text{labor's share} \equiv \hat{\alpha}_L(t) =& 1 - \hat{\alpha}_K\big(k(t; g,n,s,\delta,\rho,\omega)\big) \notag \\
+    =& \frac{1-\omega}{\omega k(t; g,n,s,\delta,\rho,\omega)^{\rho} + (1 - \omega)}
+\end{align}
+Note the dependence of factor shares on the time-path of capital per effective worker, $k(t; g,n,s,\delta,\rho,\omega)$. 
+
+I assume that data on labor share are noisy, in particular I suppose that
+\begin{equation}
+    \alpha_L(t) = \hat{\alpha}_L(t; g,n,s,\delta,\rho,\omega) + \epsilon(t)
+\end{equation}
+where the disturbance, $\epsilon(t)$, is an independently and identically distributed Gaussian random variable with mean zero.
+\begin{equation}
+    \epsilon(t) \sim \mathcal{N}(0, \sigma) 
+\end{equation}
+
+\subsection{Deriving the likelihood function}
+Using my identifying assumption I can define the following residual.
+\begin{equation}
+    \epsilon(t) =  \alpha_L(t) - \hat{\alpha}_L(t; g,n,s,\delta,\rho,\omega)
+\end{equation}
+Given my assumption that $\epsilon(t)$ is an independently and identically distributed Gaussian random variable with mean zero, the probability of observing any particular $\epsilon(t)$ is
+\begin{equation}
+    P(\epsilon(t); n,g,s,\delta,\rho,\sigma,\omega) = \frac{1}{\sigma \sqrt{2 \pi}} exp\bigg\{-\frac{\big(\alpha_L(t) - \hat{\alpha}_L(t; n,g,s,\delta,\rho,\omega\big)^2}{2\sigma^2}\bigg\}.
+\end{equation}
+The probability of observing a seqution $\epsilon(0), \epsilon(1), \dots, \epsilon(T)$ is 
+\begin{equation}
+    P(\epsilon(0), \epsilon(1), \dots, \epsilon(T); n,g,s,\delta,\rho,\sigma,\omega) = \prod_{t=0}^T P(\epsilon(t); n,g,s,\delta,\rho,\omega).
+\end{equation}
+The likelihood of the model given the data is
+\begin{equation}
+    \mathcal{L}(n,g,s,\delta,\rho,\sigma,\omega; \epsilon(0), \epsilon(1), \dots, \epsilon(T)) = \prod_{t=0}^T P(\epsilon(t); n,g,s,\delta,\rho,\omega)
+\end{equation}
+and the log-likelihood of the model is
+\begin{equation}
+    \mathcal{LL}(n,g,s,\delta,\rho,\omega; \epsilon(0), \epsilon(1), \dots, \epsilon(T)) = \sum_{t=0}^T \ln\ P(\epsilon(t); n,g,s,\delta,\rho,\omega).
+\end{equation}
+
+I choose parameters $n,g,s,\delta,\rho,\omega$ in order to maximize the log-likehood of the model given that data.
+
+\end{document} 
