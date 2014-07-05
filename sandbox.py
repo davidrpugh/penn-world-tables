@@ -19,6 +19,14 @@ def _ces_output(capital, rho, omega):
     return output
 
 
+def solow_model(time, capital, n, g, s, delta, rho, omega):
+    """Equation of motion for capital (per effective worker)."""
+    actual_investment = s * _ces_output(capital, rho, omega)
+    break_even_investment = (n + g + delta) * capital
+
+    return actual_investment - break_even_investment
+
+
 def _ces_technology(capital, labor, output, rho, omega):
     """Technology as a residual of the CES production function."""
     output_per_worker = output / labor
