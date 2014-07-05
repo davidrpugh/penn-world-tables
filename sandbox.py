@@ -9,6 +9,16 @@ import pwt
 pwt_data = pwt.load_pwt_data()
 
 
+def _ces_output(capital, rho, omega):
+    """Constant elasticity of substitution (CES) production function."""
+    if abs(rho) < 1e-3:
+        output = capital**omega
+    else:
+        output = (omega * capital + (1 - omega))**(1 / rho)
+
+    return output
+
+
 def _ces_technology(capital, labor, output, rho, omega):
     """Technology as a residual of the CES production function."""
     output_per_worker = output / labor
