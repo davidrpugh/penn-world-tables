@@ -9,14 +9,31 @@ import pwt
 pwt_data = pwt.load_pwt_data()
 
 
+def _ces_marginal_product_capital(capital, rho, omega):
+    """Marginal product of capital (per effective worker)."""
+    if abs(rho) < 1e-3:
+        mpk = omega * capital**(omega - 1)
+    else:
+        mpk = ((omega * capital**(rho - 1)) / (omega * capital**rho + (1 - omega)) *
+               _ces_output(capital, rho, omega))
+
+    return mpk
+
+
 def _ces_output(capital, rho, omega):
     """Constant elasticity of substitution (CES) production function."""
     if abs(rho) < 1e-3:
         output = capital**omega
     else:
-        output = (omega * capital + (1 - omega))**(1 / rho)
+        output = (omega * capital**rho + (1 - omega))**(1 / rho)
 
     return output
+
+
+def solow_jacobian(time, capital, n, g, s, delta, rho, omega):
+    """Jacobian for equation of motion for capital (per effective worker)."""
+    jac = s * _ces_marginal_product_capital(capital, rho, omega) - (n + g + delta)
+    return jac
 
 
 def solow_model(time, capital, n, g, s, delta, rho, omega):
@@ -42,7 +59,7 @@ def _ces_technology(capital, labor, output, rho, omega):
 
 
 def _initial_condition(ctry, start, rho, omega):
-    """Initial condition for capital per effective worker."""
+    """Initial condition for capital (per effective worker)."""
     initial_capital = pwt_data.major_xs(ctry)['rkna'][start]
     initial_labor = pwt_data.major_xs(ctry)['emp'][start]
     initial_output = pwt_data.major_xs(ctry)['rgdpna'][start]
