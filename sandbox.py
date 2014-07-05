@@ -30,7 +30,7 @@ def _ces_output(capital, rho, omega):
     return output
 
 
-def solow_jacobian(time, capital, n, g, s, delta, rho, omega):
+def solow_jacobian(capital, time, n, g, s, delta, rho, omega):
     """Jacobian for equation of motion for capital (per effective worker)."""
     marginal_benefit = s * _ces_marginal_product_capital(capital, rho, omega)
     marginal_cost = n + g + delta
@@ -38,7 +38,7 @@ def solow_jacobian(time, capital, n, g, s, delta, rho, omega):
     return marginal_benefit - marginal_cost
 
 
-def solow_model(time, capital, n, g, s, delta, rho, omega):
+def solow_model(capital, time, n, g, s, delta, rho, omega):
     """Equation of motion for capital (per effective worker)."""
     actual_investment = s * _ces_output(capital, rho, omega)
     break_even_investment = (n + g + delta) * capital
@@ -110,23 +110,13 @@ def objective(params, ctry, start, end):
 
     # solve for the time path of capital
     k0 = _initial_condition(ctry, start, rho, omega)
-    r = integrate.ode(solow_model, solow_jacobian)
-    r.set_integrator('dopri5', atol=1e-9, rtol=1e-9)
-    t0 = labor_share.index[0].year
-    r.set_initial_value(k0, t0)
-    r.set_f_params(g, n, s, delta, rho, sigma, omega)
-    r.set_jac_params(g, n, s, delta, rho, sigma, omega)
-
-    T = labor_share.index[-1].year
-    dt = 1.0
-
-    tmp_capital = np.array([k0])
-    while r.successful() and r.t < T:
-        r.integrate(r.t + dt)
-        tmp_capital = np.hstack((tmp_capital, r.y))
+    time_pts = labor_share.index.year
+    traj = integrate.odeint(solow_model, y0=k0, t=time_pts,
+                            args=(g, n, s, delta, rho, omega),
+                            Dfun=solow_jacobian, col_deriv=True)
 
     # compute the total log-likelihood
-    total_ll = np.sum(_individual_ll(k0, labor_share, rho, sigma, omega))
+    total_ll = np.sum(_individual_ll(traj[:, 0], labor_share, rho, sigma, omega))
 
     return -total_ll
 
@@ -142,7 +132,7 @@ if __name__ == '__main__':
     test_capital = np.ones(N)
 
     # print individual_log_likelihood(test_capital, ctry, *test_params)
-    start, end = '1950-01-01', '2011-01-01'
+    start, end = '1950-01-01', '2000-01-01'
     print objective(test_params, ctry, start, end)
 
     result = optimize.minimize(objective,
@@ -153,3 +143,13 @@ if __name__ == '__main__':
                                )
 
     print result
+
+    # solve for the time path of capital
+    k0 = _initial_condition(ctry, start, rho, omega)
+    result = integrate.odeint(solow_model,
+                              y0=k0,
+                              t=pwt_data.major_xs(ctry)['labsh'].index.year,
+                              args=(g, n, s, delta, rho, omega),
+                              Dfun=solow_jacobian,
+                              col_deriv=True,
+                              )
