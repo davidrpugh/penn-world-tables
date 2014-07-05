@@ -1,7 +1,7 @@
 """Module for testing out new ideas and playing around."""
 
 import numpy as np
-from scipy import optimize, stats
+from scipy import integrate, optimize, stats
 
 import pwt
 
@@ -120,9 +120,10 @@ def objective(params, ctry, start, end):
 if __name__ == '__main__':
 
     # ordering is g, n, s, delta, rho, sigma, omega
-    test_params = np.array([0.02, 0.02, 0.15, 0.04, 0.0, 0.05, 0.33])
+    g, n, s, delta, rho, sigma, omega = 0.02, 0.02, 0.15, 0.04, 0.0, 0.05, 0.33
+    test_params = np.array([g, n, s, delta, rho, sigma, omega])
 
-    ctry = 'GBR'
+    ctry = 'USA'
     N = pwt_data.major_xs(ctry)['labsh'].size
     test_capital = np.ones(N)
 
@@ -135,3 +136,18 @@ if __name__ == '__main__':
                                method='Nelder-Mead',
                                options={'maxfev': 1000},
                                )
+
+    # play about with solving the Solow model...
+    k0 = _initial_condition(ctry, '1950-01-01', rho, omega)
+    r = integrate.ode(solow_model, solow_jacobian)
+    r.set_integrator('dopri5', atol=1e-9, rtol=1e-9)
+    r.set_initial_value(k0, 1950)
+    r.set_f_params(*result.x)
+    r.set_jac_params(*result.x)
+
+    T = 2011
+    dt = 1.0
+
+    while r.successful() and r.t < T:
+        r.integrate(r.t + dt)
+        print("%g %g" % (r.t, r.y))
