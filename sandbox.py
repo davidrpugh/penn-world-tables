@@ -32,8 +32,10 @@ def _ces_output(capital, rho, omega):
 
 def solow_jacobian(time, capital, n, g, s, delta, rho, omega):
     """Jacobian for equation of motion for capital (per effective worker)."""
-    jac = s * _ces_marginal_product_capital(capital, rho, omega) - (n + g + delta)
-    return jac
+    marginal_benefit = s * _ces_marginal_product_capital(capital, rho, omega)
+    marginal_cost = n + g + delta
+
+    return marginal_benefit - marginal_cost
 
 
 def solow_model(time, capital, n, g, s, delta, rho, omega):
