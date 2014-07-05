@@ -110,6 +110,20 @@ def objective(params, ctry, start, end):
 
     # solve for the time path of capital
     k0 = _initial_condition(ctry, start, rho, omega)
+    r = integrate.ode(solow_model, solow_jacobian)
+    r.set_integrator('dopri5', atol=1e-9, rtol=1e-9)
+    t0 = labor_share.index[0].year
+    r.set_initial_value(k0, t0)
+    r.set_f_params(g, n, s, delta, rho, sigma, omega)
+    r.set_jac_params(g, n, s, delta, rho, sigma, omega)
+
+    T = labor_share.index[-1].year
+    dt = 1.0
+
+    tmp_capital = np.array([k0])
+    while r.successful() and r.t < T:
+        r.integrate(r.t + dt)
+        tmp_capital = np.hstack((tmp_capital, r.y))
 
     # compute the total log-likelihood
     total_ll = np.sum(_individual_ll(k0, labor_share, rho, sigma, omega))
@@ -120,7 +134,7 @@ def objective(params, ctry, start, end):
 if __name__ == '__main__':
 
     # ordering is g, n, s, delta, rho, sigma, omega
-    g, n, s, delta, rho, sigma, omega = 0.02, 0.02, 0.15, 0.04, 0.0, 0.05, 0.33
+    g, n, s, delta, rho, sigma, omega = 0.02, 0.02, 0.15, 0.04, 0.5, 0.05, 0.33
     test_params = np.array([g, n, s, delta, rho, sigma, omega])
 
     ctry = 'USA'
@@ -128,26 +142,14 @@ if __name__ == '__main__':
     test_capital = np.ones(N)
 
     # print individual_log_likelihood(test_capital, ctry, *test_params)
-    print objective(test_params, ctry, '1950-01-01', '1950-01-01')
+    start, end = '1950-01-01', '2011-01-01'
+    print objective(test_params, ctry, start, end)
 
     result = optimize.minimize(objective,
                                x0=test_params,
-                               args=(ctry, '1950-01-01', '1950-01-01'),
+                               args=(ctry, start, end),
                                method='Nelder-Mead',
                                options={'maxfev': 1000},
                                )
 
-    # play about with solving the Solow model...
-    k0 = _initial_condition(ctry, '1950-01-01', rho, omega)
-    r = integrate.ode(solow_model, solow_jacobian)
-    r.set_integrator('dopri5', atol=1e-9, rtol=1e-9)
-    r.set_initial_value(k0, 1950)
-    r.set_f_params(*result.x)
-    r.set_jac_params(*result.x)
-
-    T = 2011
-    dt = 1.0
-
-    while r.successful() and r.t < T:
-        r.integrate(r.t + dt)
-        print("%g %g" % (r.t, r.y))
+    print result
