@@ -12,11 +12,12 @@ class TestPWTDownload(unittest.TestCase):
     version = 80
 
     def setUp(self):
-        """Setup load_pwt_data test fixture."""
-        if os.path.isfile('depreciation_rates.dta'):
-            os.remove('depreciation_rates.dta')
-        if os.path.isfile('pwt' + str(self.version) + '.dta'):
-            os.remove('pwt' + str(self.version) + '.dta')
+        """Setup test fixtures."""
+        files = ['depreciation_rates.dta', 'pwt' + str(self.version) + '.dta']
+
+        for tmp_file in files:
+            if os.path.isfile(tmp_file):
+                os.remove(tmp_file)
 
     def tearDown(self):
         """Teardown for load_pwt_data test fixture."""
@@ -29,7 +30,6 @@ class TestPWTDownload(unittest.TestCase):
         mesg = "Download of 'depreciation_rates.dta' file failed!"
         assert os.path.isfile('depreciation_rates.dta'), mesg
 
-# @with_setup(setup_func, teardown_func)
 # def test__get_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
 #     """Test load_pwt_data function."""
 #     pwt._get_pwt_data(base_url, version)
