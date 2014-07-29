@@ -8,21 +8,22 @@ import pwt
 # load the Penn World Tables data
 pwt_data = pwt.load_pwt_data()
 
+EPS = 1e-6
+
 
 def _ces_marginal_product_capital(capital, rho, omega):
     """Marginal product of capital (per effective worker)."""
-    if abs(rho) < 1e-3:
+    if abs(rho) < EPS:
         mpk = omega * capital**(omega - 1)
     else:
-        mpk = ((omega * capital**(rho - 1)) / (omega * capital**rho + (1 - omega)) *
-               _ces_output(capital, rho, omega))
+        mpk = omega * capital**(rho - 1) * (omega * capital**rho + (1 - omega))**((1 - rho) / rho)
 
     return mpk
 
 
 def _ces_output(capital, rho, omega):
     """Constant elasticity of substitution (CES) production function."""
-    if abs(rho) < 1e-3:
+    if abs(rho) < EPS:
         output = capital**omega
     else:
         output = (omega * capital**rho + (1 - omega))**(1 / rho)
@@ -51,7 +52,7 @@ def _ces_technology(capital, labor, output, rho, omega):
     output_per_worker = output / labor
     capital_labor_ratio = capital / labor
 
-    if abs(rho) < 1e-3:
+    if abs(rho) < EPS:
         tech = (output_per_worker / capital_labor_ratio**omega)**(1 / (1 - omega))
     else:
         tech = ((1 / (1 - omega)) * output_per_worker**rho +
@@ -73,7 +74,7 @@ def _initial_condition(ctry, start, rho, omega):
 
 def _predicted_labor_share(capital, rho, omega):
     """Model predicted share of income going to labor."""
-    if abs(rho) <= 1e-3:
+    if abs(rho) <= EPS:
         labor_share = omega
     else:
         labor_share = (1 - omega) / (omega * capital**rho + (1 - omega))
@@ -117,39 +118,50 @@ def objective(params, ctry, start, end):
 
     # compute the total log-likelihood
     total_ll = np.sum(_individual_ll(traj[:, 0], labor_share, rho, sigma, omega))
-
+    #print params
+    #print -total_ll
     return -total_ll
 
 
 if __name__ == '__main__':
 
     # ordering is g, n, s, delta, rho, sigma, omega
-    g, n, s, delta, rho, sigma, omega = 0.02, 0.02, 0.15, 0.04, 0.5, 0.05, 0.33
+    g, n, s, delta, rho, sigma, omega = 0.02, 0.02, 0.5, 0.04, 0.15, 0.05, 0.5
     test_params = np.array([g, n, s, delta, rho, sigma, omega])
 
-    ctry = 'USA'
+    ctry = 'KOR'
     N = pwt_data.major_xs(ctry)['labsh'].size
     test_capital = np.ones(N)
 
     # print individual_log_likelihood(test_capital, ctry, *test_params)
-    start, end = '1950-01-01', '2000-01-01'
+    start, end = '1970-01-01', '1971-01-01'
     print objective(test_params, ctry, start, end)
 
     result = optimize.minimize(objective,
                                x0=test_params,
                                args=(ctry, start, end),
-                               method='Nelder-Mead',
-                               options={'maxfev': 1000},
+                               method='nelder-mead',
+                               )
+    print result
+
+    cons = [{'type':'ineq', 'fun':lambda params: params[0] + params[1] + params[3]}]
+
+    result2 = optimize.minimize(objective,
+                               x0=test_params,
+                               args=(ctry, start, end),
+                               method='SLSQP',
+                               #bounds=[(None, None), (None, None), (EPS, None), (EPS, 1-EPS), (None, 1-EPS), (EPS, None), (EPS, 1-EPS)],
+                               constraints=cons,
                                )
 
-    print result
+    print result2
 
     # solve for the time path of capital
     k0 = _initial_condition(ctry, start, rho, omega)
-    result = integrate.odeint(solow_model,
-                              y0=k0,
-                              t=pwt_data.major_xs(ctry)['labsh'].index.year,
-                              args=(g, n, s, delta, rho, omega),
-                              Dfun=solow_jacobian,
-                              col_deriv=True,
-                              )
+    result3 = integrate.odeint(solow_model,
+                               y0=k0,
+                               t=pwt_data.major_xs(ctry)['labsh'].index.year,
+                               args=(g, n, s, delta, rho, omega),
+                               Dfun=solow_jacobian,
+                               col_deriv=True,
+                               )
