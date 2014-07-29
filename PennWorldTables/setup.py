@@ -1,14 +1,12 @@
-import os
-
-from setuptools import setup
-
-
-def read(*paths):
-    """Build a file path from *paths* and return the contents."""
-    with open(os.path.join(*paths), 'r') as f:
-        return f.read()
+from distutils.core import setup
 
 setup(name='pwt',
+      packages=['pwt'],
       version='0.1.0',
-      description='Python package for working with Penn World Tables (PWT) data.',
+      description='Python package for generating the Penn World Tables data set.',
+      author='David R. Pugh',
+      author_email='david.pugh@maths.ox.ac.uk',
+      url='https://github.com/davidrpugh/penn-world-tables',
+      license='LICENSE.txt',
+      install_requires=['pandas'],
       )
