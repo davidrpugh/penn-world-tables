@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='pwt',
+setup(name='pypwt',
       version='0.1.0',
       description='Python package for generating the Penn World Tables data set.',
       author='David R. Pugh',
