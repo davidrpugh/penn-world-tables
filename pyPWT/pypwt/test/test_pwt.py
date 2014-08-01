@@ -4,7 +4,7 @@ import unittest
 
 import pandas as pd
 
-import pwt
+from .. import pwt
 
 
 class TestPWTDownload(unittest.TestCase):
