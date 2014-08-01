@@ -39,19 +39,17 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/',
     """
     Load the Penn World Tables (PWT) data as a Pandas Panel object.
 
-    Arguments:
+    Parameters
+    ----------
+        base_url : str, optional(default='http://www.rug.nl/research/ggdc/data/pwt/')
+            Base url to use for the download.
+        version : int, optional(default=80)
+            Version number for PWT data.
 
-        base_url: (str) Base url to use for the download. Current default is:
-
-                      'http://www.rug.nl/research/ggdc/data/pwt/'
-
-        version: (int) Version number for PWT data. Default is 80 (which is the
-                  most recent version).
-
-    Returns:
-
-        pwt_panel_data: (Panel) A Pandas Panel object containing the Penn World
-                        Tables (PWT) data.
+    Returns
+    -------
+        pwt_panel_data : pd.Panel
+            A Pandas Panel object containing the Penn World Tables (PWT) data.
 
     """
     try:
