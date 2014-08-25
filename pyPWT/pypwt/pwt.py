@@ -1,9 +1,3 @@
-"""
-TODO:
-2. Write some tests.
-3. Merge to master.
-
-"""
 from __future__ import division
 import types
 
