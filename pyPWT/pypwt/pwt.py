@@ -135,7 +135,7 @@ class PWT(object):
 
     @chn.setter
     def chn(self, value):
-        self._chn = value
+        self._chn = self._validate_chn(value)
 
     def _validate_chn(self, value):
         """Validate the chn attribute value."""

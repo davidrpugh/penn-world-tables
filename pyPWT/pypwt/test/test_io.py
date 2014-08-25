@@ -1,10 +1,10 @@
-"""Unit testing framework for pwt.py module."""
+"""Unit testing framework for io.py module."""
 import os
 import unittest
 
 import pandas as pd
 
-from .. import pwt
+from .. import io
 
 
 class TestPWTDownload(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestPWTDownload(unittest.TestCase):
 
     def test__get_dep_rates_data(self):
         """Test download of depreciation rates data."""
-        pwt._get_dep_rates_data(self.base_url, self.version)
+        io._get_dep_rates_data(self.base_url, self.version)
 
         # assert that files have been downloaded
         mesg = "Download of 'depreciation_rates.dta' file failed!"
@@ -35,7 +35,7 @@ class TestPWTDownload(unittest.TestCase):
 
     def test__get_pwt_data(self):
         """Test download of PWT data."""
-        pwt._get_pwt_data(self.base_url, self.version)
+        io._get_pwt_data(self.base_url, self.version)
 
         # assert that files have been downloaded
         tmp_file = 'pwt' + str(self.version) + '.dta'
@@ -44,7 +44,7 @@ class TestPWTDownload(unittest.TestCase):
 
     def test__download_pwt_data(self):
         """Test download of combined data set."""
-        pwt._download_pwt_data(self.base_url, self.version)
+        io._download_pwt_data(self.base_url, self.version)
 
         # assert that files have been downloaded
         mesg = "Download of 'depreciation_rates.dta' file failed!"
@@ -56,6 +56,6 @@ class TestPWTDownload(unittest.TestCase):
 
     def test_load_pwt_data(self):
         """Test that PWT data has been loaded correctly."""
-        data = pwt.load_pwt_data(base_url=self.base_url,
+        data = io.load_pwt_data(base_url=self.base_url,
                                  version=self.version)
         self.assertIsInstance(data, pd.Panel)
