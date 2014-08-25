@@ -1,3 +1,10 @@
+"""
+TODO:
+2. Write some tests.
+3. Merge to master.
+
+"""
+from __future__ import division
 import types
 
 
@@ -40,6 +47,15 @@ class PWT(object):
 
     @property
     def index1(self):
+        """
+        Determines aggregation method for aggregating basic headings. Must be
+        one of either 'geks' or 'gk'.
+
+        :getter: Return the current index1 value.
+        :setter: Set a new value for index1.
+        :type: string
+
+        """
         return self._index1
 
     @index1.setter
@@ -48,6 +64,15 @@ class PWT(object):
 
     @property
     def index2(self):
+        """
+        Determines aggregation method for aggregating main expenditure
+        categories. Must be one of either set to 'geks' or 'gk'.
+
+        :getter: Return the current index2 value.
+        :setter: Set a new value for index2.
+        :type: string
+
+        """
         return self._index2
 
     @index2.setter
@@ -67,6 +92,16 @@ class PWT(object):
 
     @property
     def bm(self):
+        """
+        By default, use all available benchmark data. Set to 2005 to keep only
+        2005 benchmark results (mimicking PWT version 7.x); alternative values:
+        1970, 1975, 1980, 1985 and 1996.
+
+        :getter: Return the current bm value.
+        :setter: Set a new value for bm.
+        :type: string or int
+
+        """
         return self._bm
 
     @bm.setter
@@ -87,6 +122,15 @@ class PWT(object):
 
     @property
     def chn(self):
+        """
+        Set to "pwt" for adjusted basic headings and NA time series; set to
+        "icp" for original basic headings and NA time series.
+
+        :getter: Return the current chn value.
+        :setter: Set a new value for chn.
+        :type: string
+
+        """
         return self._chn
 
     @chn.setter
@@ -106,6 +150,15 @@ class PWT(object):
 
     @property
     def norm(self):
+        """
+        Set to False to normalise to USA=GDP deflator; set to True to
+        normalise to USA=1 in every year.
+
+        :getter: Return the current norm value.
+        :setter: Set a new value for norm.
+        :type: boolean
+
+        """
         return self._norm
 
     @norm.setter
