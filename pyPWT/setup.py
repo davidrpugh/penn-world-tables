@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(name='pypwt',
-      packages=find_packages(exclude=['test']),
-      version='0.1.0',
+      packages=find_packages(exclude=['pypwt.test']),
+      version='0.1.1',
       description='Python package for generating the Penn World Tables data set.',
       author='David R. Pugh',
       author_email='david.pugh@maths.ox.ac.uk',
