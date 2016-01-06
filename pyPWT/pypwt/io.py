@@ -5,7 +5,7 @@ it into a Pandas Panel object for subsequent analysis.
 
 """
 from __future__ import division
-from StringIO import StringIO
+from io import BytesIO
 import zipfile
 
 import pandas as pd
@@ -16,7 +16,7 @@ def _get_dep_rates_data(base_url, version):
     """Download the depreciation rate data."""
     tmp_url = base_url + 'v' + str(version) + '/depreciation_rates.zip'
     tmp_buffer = requests.get(url=tmp_url)
-    tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
+    tmp_zip = zipfile.ZipFile(BytesIO(tmp_buffer.content))
     tmp_zip.extract('depreciation_rates.dta')
 
 
@@ -24,7 +24,7 @@ def _get_pwt_data(base_url, version):
     """Download the Penn World Tables (PWT) data."""
     tmp_url = base_url + 'v' + str(version) + '/pwt' + str(version) + '.zip'
     tmp_buffer = requests.get(url=tmp_url)
-    tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
+    tmp_zip = zipfile.ZipFile(BytesIO(tmp_buffer.content))
     tmp_zip.extract('pwt' + str(version) + '.dta')
 
 
