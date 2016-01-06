@@ -1,5 +1,4 @@
 from __future__ import division
-import types
 
 
 class PWT(object):
@@ -75,7 +74,7 @@ class PWT(object):
 
     def _validate_index(self, value):
         """Validate the index1 and index2 attribute values."""
-        if not isinstance(value, types.StringType):
+        if not isinstance(value, str):
             mesg = "Attribute type must be a string, not a {}"
             raise AttributeError(mesg.format(value.__class__))
         if value not in ['geks', 'gk']:
@@ -105,7 +104,7 @@ class PWT(object):
     def _validate_bm(self, value):
         """Validate the bm attribute value."""
         valid_bms = ['all', 1970, 1975, 1980, 1985, 1996]
-        if not isinstance(value, (types.IntType, types.StringType)):
+        if not isinstance(value, (int, str)):
             mesg = "Attribute type must be an int or string, not a {}"
             raise AttributeError(mesg.format(value.__class__))
         if value not in valid_bms:
@@ -133,7 +132,7 @@ class PWT(object):
 
     def _validate_chn(self, value):
         """Validate the chn attribute value."""
-        if not isinstance(value, types.StringType):
+        if not isinstance(value, str):
             mesg = "Attribute type must be a string, not a {}"
             raise AttributeError(mesg.format(value.__class__))
         if value not in ['pwt', 'icp']:
@@ -161,7 +160,7 @@ class PWT(object):
 
     def _validate_norm(self, value):
         """Validate the norm attribute value."""
-        if not isinstance(value, types.BooleanType):
+        if not isinstance(value, bool):
             mesg = "Attribute type must be a boolean, not a {}"
             raise AttributeError(mesg.format(value.__class__))
         if value not in [True, False]:

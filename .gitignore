@@ -1,2 +1,27 @@
-*.dta
+# ignore all .pyc files
 *.pyc
+
+# ignore ipython checkpoints
+.ipynb_checkpoints/
+
+# ignore coverage statistics
+.coverage
+
+# ignore build info
+dist/
+
+# ignore *.egg-info
+*.egg-info/
+
+# ignore version file
+pyPWT/version.py
+
+#ignore MANIFEST
+MANIFEST
+
+# ignore egg-info
+pypwt.egg-info
+
+# ignore docs/build
+docs/build
+
